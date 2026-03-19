@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>シンプルRPG</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #222;
+    color: #fff;
+    text-align: center;
+  }
+  #game {
+    margin-top: 20px;
+  }
+  #log {
+    width: 300px;
+    height: 150px;
+    margin: 10px auto;
+    padding: 10px;
+    background: #111;
+    overflow-y: auto;
+    border-radius: 10px;
+    text-align: left;
+  }
+  button {
+    padding: 10px 20px;
+    margin: 5px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  .attack { background: crimson; }
+  .heal { background: green; }
+  .next { background: royalblue; }
+</style>
+</head>
+<body>
+
+<h1>⚔️ シンプルRPG</h1>
+<div id="game">
+  <p>プレイヤーHP: <span id="playerHp"></span></p>
+  <p>敵HP: <span id="enemyHp"></span></p>
+  <div>
+    <button class="attack" onclick="attack()">攻撃</button>
+    <button class="heal" onclick="heal()">回復</button>
+    <button class="next" onclick="nextEnemy()">次の敵</button>
+  </div>
+  <div id="log"></div>
+</div>
+
+<script>
+let player = { hp: 100, maxHp: 100 };
+let enemy = { hp: 50, maxHp: 50, level: 1 };
+
+function updateUI() {
+  document.getElementById("playerHp").textContent = player.hp;
+  document.getElementById("enemyHp").textContent = enemy.hp;
+}
+
+function log(text) {
+  const logDiv = document.getElementById("log");
+  logDiv.innerHTML += text + "<br>";
+  logDiv.scrollTop = logDiv.scrollHeight;
+}
+
+function attack() {
+  if (enemy.hp <= 0) {
+    log("敵はいない！次の敵へ");
+    return;
+  }
+
+  let dmg = Math.floor(Math.random() * 15) + 5;
+  enemy.hp -= dmg;
+  log("プレイヤーの攻撃！ " + dmg + "ダメージ");
+
+  if (enemy.hp > 0) enemyTurn();
+  else log("敵を倒した！");
+
+  updateUI();
+}
+
+function heal() {
+  let amount = Math.floor(Math.random() * 15) + 10;
+  player.hp = Math.min(player.maxHp, player.hp + amount);
+  log("回復した！ " + amount);
+  enemyTurn();
+  updateUI();
+}
+
+function enemyTurn() {
+  let dmg = Math.floor(Math.random() * 10) + 5;
+  player.hp -= dmg;
+  log("敵の攻撃！ " + dmg + "ダメージ");
+
+  if (player.hp <= 0) {
+    log("ゲームオーバー！ページを更新して再挑戦");
+  }
+}
+
+function nextEnemy() {
+  if (enemy.hp > 0) {
+    log("まだ敵がいる！");
+    return;
+  }
+
+  enemy.level++;
+  enemy.maxHp += 20;
+  enemy.hp = enemy.maxHp;
+  log("レベル" + enemy.level + "の敵が現れた！");
+  updateUI();
+}
+
+updateUI();
+</script>
+
+</body>
+</html>
